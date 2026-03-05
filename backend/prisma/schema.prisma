@@ -1,14 +1,47 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+
+}
+
+enum ProductType {
+  COUPON
+}
+
+enum ValueType {
+  STRING
+  IMAGE
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  type        ProductType
+  imageUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coupon      Coupon?
+
+  @@map("products")
+}
+
+model Coupon {
+  id                 String   @id @default(uuid())
+  productId          String   @unique
+  costPrice          Decimal
+  marginPercentage   Decimal
+  minimumSellPrice   Decimal
+  isSold             Boolean  @default(false)
+
+  valueType          ValueType
+  value              String
+
+  product            Product  @relation(fields: [productId], references: [id])
+
+  @@map("coupons")
 }
