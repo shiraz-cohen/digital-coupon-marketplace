@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import productsRouter from "./routes/products.routes";
+import adminRouter from "./routes/admin.routes";
 //import { setupSwagger } from "./swagger";
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/v1/products", productsRouter);
+app.use("/api/v1/admin", adminRouter);
 
 
 app.get("/health", (req, res) => {
