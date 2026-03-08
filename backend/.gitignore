@@ -1,12 +1,12 @@
-node_modules
+
 # Keep environment variables out of version control
 
 
 /src/generated/prisma
 
 # Node modules
+**/node_modules/
 node_modules/
-
 # Build outputs
 dist/
 
@@ -22,3 +22,9 @@ prisma/migrations/
 
 # VSCode
 .vscode/
+
+# Seed files
+src/seed.ts
+
+# Swagger
+src/swagger.ts
