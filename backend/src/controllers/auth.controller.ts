@@ -72,3 +72,9 @@ export async function login(req: Request, res: Response) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+
+// POST /api/v1/auth/logout
+export async function logout(req: Request, res: Response) {
+  res.json({ message: "Successfully logged out" });
+}
