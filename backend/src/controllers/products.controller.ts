@@ -1,71 +1,89 @@
 import { Request, Response } from "express";
-import { prisma } from "../utils/prisma";
-import { ProductResponse } from "../types/product.types";
+import { 
+  fetchAvailableProducts, 
+  fetchProductById, 
+  processPurchase 
+} from "../services/products.service";
 
-// GET /api/v1/products
+
+ // GET /api/v1/products (Reseller)
+//  GET /api/v1/customer/products (Customer)
+
 export async function getAvailableProducts(req: Request, res: Response) {
   try {
-    const products = await prisma.product.findMany({
-      where: {
-        coupon: {
-          isSold: false,
-        },
-      },
-      include: {
-        coupon: true,
-      },
-    });
-
-    const response: ProductResponse[] = products.map((p: any) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      image_url: p.imageUrl,
-      price: p.coupon?.minimumSellPrice ?? null,
-    }));
-
-    res.json(response);
+    const products = await fetchAvailableProducts();
+    res.json(products);
   } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      error_code: "INTERNAL_ERROR",
-      message: "Something went wrong",
+    console.error("Error in getAvailableProducts:", err);
+    res.status(500).json({ 
+      error_code: "INTERNAL_ERROR", 
+      message: "Something went wrong" 
     });
   }
 }
 
-// GET /api/v1/products/:productId
-export async function getProductById(req: Request, res: Response) {
+
+ // GET /api/v1/products/:productId
+ // GET /api/v1/customer/products/:productId
+ 
+export async function getProductByIdController(req: Request, res: Response) {
   try {
-    const { productId } = req.params;
+    const productId = Array.isArray(req.params.productId) 
+      ? req.params.productId[0] 
+      : req.params.productId;
 
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: { coupon: true },
-    });
+    if (!productId) {
+      return res.status(400).json({ message: "productId is required" });
+    }
 
+    const product = await fetchProductById(productId);
+    
     if (!product) {
-      return res.status(404).json({
-        error_code: "PRODUCT_NOT_FOUND",
-        message: `Product with id ${productId} not found`,
+      return res.status(404).json({ 
+        error_code: "PRODUCT_NOT_FOUND", 
+        message: "Product not found" 
       });
     }
 
-    const response: ProductResponse = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      image_url: product.imageUrl,
-      price: product.coupon?.minimumSellPrice ?? null,
-    };
-
-    res.json(response);
+    res.json(product);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error_code: "INTERNAL_ERROR",
-      message: "Something went wrong",
+    console.error("Error in getProductByIdController:", err);
+    res.status(500).json({ 
+      error_code: "INTERNAL_ERROR", 
+      message: "Something went wrong" 
+    });
+  }
+}
+
+
+ // POST /api/v1/products/:productId/purchase
+ // POST /api/v1/customer/products/:productId/purchase
+ 
+export async function purchaseProductController(req: Request, res: Response) {
+  try {
+    const productId = Array.isArray(req.params.productId) 
+      ? req.params.productId[0] 
+      : req.params.productId;
+
+    const { reseller_price } = req.body;
+
+    if (reseller_price === undefined || typeof reseller_price !== "number") {
+      return res.status(400).json({ 
+        error_code: "MISSING_FIELDS", 
+        message: "reseller_price is required and must be a number" 
+      });
+    }
+
+    const result = await processPurchase(productId, reseller_price);
+    
+    res.json(result);
+
+  } catch (err: any) {
+    console.error("Error in purchaseProductController:", err);
+    
+    res.status(err.status || 500).json({
+      error_code: err.error_code || "INTERNAL_ERROR",
+      message: err.message || "Something went wrong",
     });
   }
 }
