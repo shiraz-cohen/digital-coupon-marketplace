@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createCouponProduct, updateCouponProduct } from "../services/admin.service";
+import { createCouponProduct, updateCouponProduct, deleteCouponProduct } from "../services/admin.service";
 
 // POST /api/v1/admin/products
 export async function createProduct(req: Request, res: Response) {
@@ -120,6 +120,41 @@ export async function updateProduct(req: Request, res: Response) {
     res.status(500).json({
       error_code: "INTERNAL_ERROR",
       message: "Something went wrong while updating the product",
+    });
+  }
+}
+
+// DELETE /api/v1/admin/products/:productId
+export async function deleteProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.productId as string;
+
+    if (!productId) {
+      return res.status(400).json({
+        error_code: "MISSING_ID",
+        message: "Product ID is required",
+      });
+    }
+
+    try {
+      await deleteCouponProduct(productId);
+    } catch (err: any) {
+      if (err.code === "P2025") { 
+        return res.status(404).json({
+          error_code: "PRODUCT_NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+      throw err;
+    }
+
+    res.json({ message: "Product deleted" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error_code: "INTERNAL_ERROR",
+      message: "Something went wrong while deleting the product",
     });
   }
 }

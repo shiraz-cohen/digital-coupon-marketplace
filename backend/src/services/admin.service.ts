@@ -1,6 +1,8 @@
 import { prisma } from "../utils/prisma";
 import { calculateMinimumSellPrice } from "./pricing.service";
 
+
+//POST /api/v1/admin/products
 export async function createCouponProduct(data: {
   name: string;
   description: string;
@@ -37,6 +39,7 @@ export async function createCouponProduct(data: {
   });
 }
 
+// PUT /api/v1/admin/products/:productId
 export async function updateCouponProduct(
   productId: string,
   data: {
@@ -75,4 +78,21 @@ export async function updateCouponProduct(
       coupon: true,
     },
   });
+}
+
+// DELETE /api/v1/admin/products/:productId
+export async function deleteCouponProduct(productId: string) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+  });
+
+  if (!product) {
+    return null;
+  }
+
+  await prisma.product.delete({
+    where: { id: productId },
+  });
+
+  return true;
 }
