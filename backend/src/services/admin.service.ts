@@ -36,3 +36,43 @@ export async function createCouponProduct(data: {
     },
   });
 }
+
+export async function updateCouponProduct(
+  productId: string,
+  data: {
+    name: string;
+    description: string;
+    imageUrl: string;
+    costPrice: number;
+    marginPercentage: number;
+    valueType: "STRING" | "IMAGE";
+    value: string;
+  }
+) {
+
+  const minimumSellPrice = calculateMinimumSellPrice(
+    data.costPrice,
+    data.marginPercentage
+  );
+
+  return prisma.product.update({
+    where: { id: productId },
+    data: {
+      name: data.name,
+      description: data.description,
+      imageUrl: data.imageUrl,
+      coupon: {
+        update: {
+          costPrice: data.costPrice,
+          marginPercentage: data.marginPercentage,
+          minimumSellPrice,
+          valueType: data.valueType,
+          value: data.value,
+        },
+      },
+    },
+    include: {
+      coupon: true,
+    },
+  });
+}

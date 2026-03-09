@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import { createCouponProduct } from "../services/admin.service";
+import { createCouponProduct, updateCouponProduct } from "../services/admin.service";
 
 // POST /api/v1/admin/products
 export async function createProduct(req: Request, res: Response) {
   try {
     const { name, description, imageUrl, costPrice, marginPercentage, valueType, value } = req.body;
 
-    // Basic validation
     if (!name || !description || !imageUrl || costPrice == null || marginPercentage == null || !valueType || !value) {
       return res.status(400).json({
         error_code: "MISSING_FIELDS",
@@ -14,7 +13,6 @@ export async function createProduct(req: Request, res: Response) {
       });
     }
 
-    // Prevent negative prices/margins
     if (costPrice < 0 || marginPercentage < 0) {
       return res.status(400).json({
         error_code: "INVALID_VALUES",
@@ -22,7 +20,6 @@ export async function createProduct(req: Request, res: Response) {
       });
     }
 
-    // Create the product using your service
     const product = await createCouponProduct({
       name,
       description,
@@ -33,29 +30,96 @@ export async function createProduct(req: Request, res: Response) {
       value,
     });
 
-    // Don't return the actual coupon value for Admin creation if you want, or you can include it
     if (!product.coupon) {
-  return res.status(500).json({
-    error_code: "INTERNAL_ERROR",
-    message: "Coupon was not created for the product",
-  });
-}
+      return res.status(500).json({
+        error_code: "INTERNAL_ERROR",
+        message: "Coupon was not created for the product",
+      });
+    }
 
-res.status(201).json({
-  id: product.id,
-  name: product.name,
-  description: product.description,
-  image_url: product.imageUrl,
-  cost_price: product.coupon.costPrice,
-  margin_percentage: product.coupon.marginPercentage,
-  minimum_sell_price: product.coupon.minimumSellPrice,
-  value_type: product.coupon.valueType,
-});
+    res.status(201).json({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      image_url: product.imageUrl,
+      cost_price: product.coupon.costPrice,
+      margin_percentage: product.coupon.marginPercentage,
+      minimum_sell_price: product.coupon.minimumSellPrice,
+      value_type: product.coupon.valueType,
+    });
+
   } catch (err) {
     console.error(err);
+
     res.status(500).json({
       error_code: "INTERNAL_ERROR",
       message: "Something went wrong while creating the product",
+    });
+  }
+}
+
+// PUT /api/v1/admin/products/:productId
+export async function updateProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.productId as string;
+
+    const { name, description, imageUrl, costPrice, marginPercentage, valueType, value } = req.body;
+
+    if (!name || !description || !imageUrl || costPrice == null || marginPercentage == null || !valueType || !value) {
+      return res.status(400).json({
+        error_code: "MISSING_FIELDS",
+        message: "All fields are required: name, description, imageUrl, costPrice, marginPercentage, valueType, value",
+      });
+    }
+
+    if (costPrice < 0 || marginPercentage < 0) {
+      return res.status(400).json({
+        error_code: "INVALID_VALUES",
+        message: "costPrice and marginPercentage must be >= 0",
+      });
+    }
+
+    const product = await updateCouponProduct(productId, {
+      name,
+      description,
+      imageUrl,
+      costPrice,
+      marginPercentage,
+      valueType,
+      value,
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        error_code: "PRODUCT_NOT_FOUND",
+        message: "Product not found",
+      });
+    }
+
+    if (!product.coupon) {
+      return res.status(500).json({
+        error_code: "INTERNAL_ERROR",
+        message: "Coupon missing",
+      });
+    }
+
+    res.json({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      image_url: product.imageUrl,
+      cost_price: product.coupon.costPrice,
+      margin_percentage: product.coupon.marginPercentage,
+      minimum_sell_price: product.coupon.minimumSellPrice,
+      value_type: product.coupon.valueType,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error_code: "INTERNAL_ERROR",
+      message: "Something went wrong while updating the product",
     });
   }
 }
