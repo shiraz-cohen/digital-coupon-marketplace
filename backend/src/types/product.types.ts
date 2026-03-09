@@ -1,5 +1,5 @@
 export type ProductResponse = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image_url: string;
