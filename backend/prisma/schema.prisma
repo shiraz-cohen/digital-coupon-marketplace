@@ -17,6 +17,24 @@ enum ValueType {
   IMAGE
 }
 
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  RESELLER
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String? 
+  role      UserRole
+  apiToken  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  purchases Purchase[]
+}
+
 model Product {
   id          String   @id @default(uuid())
   name        String
@@ -27,6 +45,7 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   coupon      Coupon?
+  purchases   Purchase[]
 
   @@map("products")
 }
@@ -45,4 +64,17 @@ model Coupon {
   product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("coupons")
+}
+
+model Purchase {
+  id        String    @id @default(uuid())
+  userId    String
+  productId String
+  pricePaid Decimal
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id])
+
+  @@map("purchases")
 }

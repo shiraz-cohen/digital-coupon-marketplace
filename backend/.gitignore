@@ -24,7 +24,7 @@ prisma/migrations/
 .vscode/
 
 # Seed files
-src/seed.ts
+
 
 # Swagger
 src/swagger.ts
