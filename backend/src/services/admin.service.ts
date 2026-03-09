@@ -39,6 +39,23 @@ export async function createCouponProduct(data: {
   });
 }
 
+// GET /api/v1/admin/products
+export async function getAllProducts() {
+  return prisma.product.findMany({
+    include: {
+      coupon: true,
+    },
+  });
+}
+
+// GET /api/v1/admin/products/:productId
+export async function getProductById(productId: string) {
+  return prisma.product.findUnique({
+    where: { id: productId },
+    include: { coupon: true },
+  });
+}
+
 // PUT /api/v1/admin/products/:productId
 export async function updateCouponProduct(
   productId: string,
