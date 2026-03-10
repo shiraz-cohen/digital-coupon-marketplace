@@ -72,7 +72,8 @@ export async function fetchAllProducts(req: Request, res: Response) {
       margin_percentage: p.coupon?.marginPercentage,
       minimum_sell_price: p.coupon?.minimumSellPrice,
       value_type: p.coupon?.valueType,
-      value: p.coupon?.value
+      value: p.coupon?.value,
+      is_sold: p.coupon?.isSold
     }));
 
     res.json(formatted);
@@ -108,7 +109,8 @@ export async function fetchProduct(req: Request, res: Response) {
       margin_percentage: product.coupon?.marginPercentage,
       minimum_sell_price: product.coupon?.minimumSellPrice,
       value_type: product.coupon?.valueType,
-      value: product.coupon?.value
+      value: product.coupon?.value,
+      is_sold: product.coupon?.isSold
     };
 
     res.json(formatted);
@@ -175,6 +177,7 @@ export async function updateProduct(req: Request, res: Response) {
       margin_percentage: product.coupon.marginPercentage,
       minimum_sell_price: product.coupon.minimumSellPrice,
       value_type: product.coupon.valueType,
+      
     });
 
   } catch (err) {

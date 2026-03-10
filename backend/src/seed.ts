@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Starting seed...");
 
+  // יצירת משתמש אדמין
   await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: {},
@@ -21,6 +22,7 @@ async function main() {
     },
   });
 
+  // יצירת משתמש ריסלר
   await prisma.user.upsert({
     where: { email: "reseller@example.com" },
     update: { apiToken: RESELLER_TOKEN },
@@ -34,8 +36,9 @@ async function main() {
   const productsToCreate = [
     {
       name: "Netflix 1 Month Subscription",
-      description: "Standard Plan Gift Card",
-      imageUrl: "https://example.com/netflix.jpg",
+      description: "Standard Plan Gift Card - Enjoy unlimited movies and TV shows.",
+      // תמונת נטפליקס אמיתית
+      imageUrl: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1000&auto=format&fit=crop",
       costPrice: 40,
       margin: 15,
       value: "NETFLIX-FREE-30-DAYS",
@@ -43,8 +46,9 @@ async function main() {
     },
     {
       name: "Steam $50 Wallet Code",
-      description: "Digital code for Steam",
-      imageUrl: "https://example.com/steam.jpg",
+      description: "Digital code for Steam - Access thousands of games.",
+      // תמונת גיימינג/סטיים אמיתית
+      imageUrl: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=1000&auto=format&fit=crop",
       costPrice: 150,
       margin: 10,
       value: "STEAM-VAL-9988-7766",
@@ -52,17 +56,20 @@ async function main() {
     },
     {
       name: "Starbucks QR Discount",
-      description: "Scan this QR for 20% off",
-      imageUrl: "https://example.com/starbucks.jpg",
+      description: "Scan this QR for 20% off your next coffee.",
+      // תמונת קפה/סטארבקס אמיתית
+      imageUrl: "https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=1000&auto=format&fit=crop",
       costPrice: 10,
       margin: 100, 
-      value: "https://example.com/qr-code-image.png",
+      // קישור ל-QR אמיתי לדוגמה
+      value: "https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg",
       valueType: "IMAGE" as const,
     },
     {
       name: "PlayStation Store $25",
-      description: "PSN Network Card",
-      imageUrl: "https://example.com/psn.jpg",
+      description: "PSN Network Card - Buy the latest games and add-ons.",
+      // תמונת פלייסטיישן אמיתית
+      imageUrl: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=1000&auto=format&fit=crop",
       costPrice: 80,
       margin: 25,
       value: "PSN-CODE-XXXX-YYYY",
@@ -93,7 +100,7 @@ async function main() {
     });
   }
 
-  console.log("Seed finished successfully! Added 4 new products.");
+  console.log("Seed finished successfully! Added 4 new products with real images.");
 }
 
 main()
