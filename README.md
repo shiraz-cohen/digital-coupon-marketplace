@@ -102,14 +102,12 @@ This prevents price manipulation by clients or resellers.
 ```text
 .
 ├── backend/
-│   ├── src
-│   ├── prisma
-│   └── seed.ts
-│
+│   ├── src/        # Logic & Controllers
+│   ├── prisma/     # DB Schema
+│   └── seed.ts     # Initial Data
 ├── frontend/
-│   ├── src
-│   └── components
-│
+│   ├── src/        # React Components
+│   └── public/
 ├── docker-compose.yml
 └── README.md
 ```
@@ -131,7 +129,10 @@ Make sure you have installed:
 
 ## 🔧 Environment Setup
 
-Create a `.env` file inside the **backend** directory.
+2️⃣ Environment Configuration (Crucial)
+Important: You must create the environment file before starting Docker containers.
+
+Create a .env file inside the backend/ directory:
 
 ```env
 DATABASE_URL="postgresql://user:password@db:5432/marketplace?schema=public"
@@ -171,6 +172,8 @@ From the project root:
 
 ```bash
 docker compose up --build -d
+
+Note: If you change the .env file later, you must restart the containers using docker compose restart backend.
 ```
 
 ---
