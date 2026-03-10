@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import AdminDashboard from './pages/AdminDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
 
 function App() {
   return (
@@ -10,9 +12,8 @@ function App() {
         <Route path="/auth/customer" element={<AuthPage type="CUSTOMER" />} />
         <Route path="/auth/admin" element={<AuthPage type="ADMIN" />} />
         
-        {/* Placeholder routes for future pages */}
-        <Route path="/shop" element={<div className="p-10 text-center">Shop Page (Coming Soon)</div>} />
-        <Route path="/admin/dashboard" element={<div className="p-10 text-center">Admin Dashboard (Coming Soon)</div>} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/shop" element={<CustomerDashboard />} />
       </Routes>
     </BrowserRouter>
   );
